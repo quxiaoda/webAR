@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <title>HTML5 GetUserMedia Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+</head>
+
+<body>
+    <div id="container">
+        <video autoplay></video>
+    </div>
+    <script type="text/javascript">
+    // 'use strict';
+
+    // var constraints = {
+    //     video: true
+    // };
+
+    // var video = document.querySelector('video');
+
+    // function handleSuccess(stream) {
+    //     window.stream = stream; // only to make stream available to console
+    //     video.srcObject = stream;
+    // }
+
+    // function handleError(error) {
+    //     console.log('navigator.getUserMedia error: ', error);
+    // }
+
+    // navigator.mediaDevices.getUserMedia(constraints).
+    // then(handleSuccess).catch(handleError);
+
+
+    navigator.getUserMedia =
+        navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia ||
+        navigator.msGetUserMedia;
+    window.URL =
+        window.URL ||
+        window.webkitURL;
+    var constraints = { video: true };
+    var successCallback = function(localMediaStream) {
+        window.stream = localMediaStream; // just to enable access from the console
+        // stream.stop();
+        window.mediaStreamTrackList = stream.videoTracks;
+        mediaStreamTrackList.onaddtrack = function(e) { console.log(e) };
+        mediaStreamTrackList.onremovetrack = function(e) { console.log(e) };
+        window.mediaStreamTrack = mediaStreamTrackList[0];
+        var kind = mediaStreamTrack.kind // "video"
+        var label = mediaStreamTrack.label // e.g. "FaceTime HD Camera (Built-in)"
+        var video = document.querySelector("video");
+        try {
+            video.src = window.URL.createObjectURL(localMediaStream);
+        } catch (e) {
+            try {
+                video.src = localMediaStream;
+                video.play();
+            } catch (e) {
+                console.log("Error setting video src: ", e);
+            }
+        }
+    }
+    var errorCallback = function(error) {
+        console.log("navigator.getUserMedia error: ", error);
+    }
+    navigator.getUserMedia(constraints, successCallback, errorCallback);
+    </script>
+</body>
+
+</html>
